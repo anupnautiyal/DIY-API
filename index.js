@@ -78,6 +78,16 @@ app.delete('jokes/:id', (req, res) => {
 });
 
 //8. DELETE All jokes
+app.delete("/jokes", (req, res) => {
+  const userKey = req.query.key;
+  if (userKey === masterKey) {
+    jokes = [];
+    res.json({ message: "All jokes have been deleted." });
+  } else {
+    res.status(403).json({ message: "Forbidden: Invalid master key." });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
