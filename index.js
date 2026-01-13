@@ -8,18 +8,74 @@ const masterKey = "4VGP2DN-6EWM4SJ-N6FGRHV-Z3PR3TT";
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //1. GET a random joke
+app.get('/random', (req, res) => {
+  const randomIndex = Math.floor(Math.random() * jokes.length);
+  res.json(jokes[randomIndex]);
+});
 
 //2. GET a specific joke
+app.get('/jokes/:id', (req, res) => {
+  const jokeId = parseInt(req.params.id);
+  const joke = jokes.find(j => j.id === jokeId);
+  res.json(joke);
+});
 
 //3. GET a jokes by filtering on the joke type
+app.get('/filter', (req, res) => {
+  const type = req.query.type;
+  const filteredjokes = jokes.filter(j => j.jokeType===type);
+  res.json(filteredjokes);
+});
 
 //4. POST a new joke
+app.post('/jokes', (req, res) => {
+  const newJoke = {
+    id: jokes.length + 1,
+    jokeText: req.body.jokeText,
+    jokeType: req.body.jokeType,
+  };
+  jokes.push(newJoke);
+  res.json(newJoke);
+});
 
 //5. PUT a joke
+app.put('/jokes/:id', (req, res) => {
+  const jokeId = parseInt(req.params.id);
+  const replacementJoke = {
+    id: jokeId,
+    jokeText: req.body.jokeText,
+    jokeType: req.body.jokeType,
+  };
+  const index = jokes.findIndex(j => j.id === jokeId);
+  jokes[index] = replacementJoke;
+  res.json(replacementJoke);
+});
 
 //6. PATCH a joke
+app.patch('/jokes/:id', (req, res) => {
+  const jokeId = parseInt(req.params.id);
+  const existingJoke = jokes.find(j => j.id === jokeId);
+  const replacementJoke = {
+    id: jokeId,
+    jokeText: req.body.jokeText || existingJoke.jokeText,
+    jokeType: req.body.jokeType || existingJoke.jokeType,
+  };
+  const index = jokes.findIndex(j => j.id === jokeId);
+  jokes[index] = replacementJoke;
+  res.json(replacementJoke);
+});
 
 //7. DELETE Specific joke
+app.delete('jokes/:id', (req, res) => {
+  const jokeId = parseInt(req.params.id);
+  const index = jokes.findIndex(j => j.id === jokeId);
+  if (index > -1) {
+    jokes.splice(index, 1);
+    res.json({ message: `Joke with id ${jokeId} deleted.` });
+  } else {
+    res.status(404).json({ message: `Joke with id ${jokeId} not found.` });
+  }
+});
 
 //8. DELETE All jokes
 
